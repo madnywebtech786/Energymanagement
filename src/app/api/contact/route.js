@@ -5,6 +5,7 @@
 // any POST, not only through the page.
 const LIMITS = {
   name: 100,
+  company: 100,
   email: 160,
   phone: 30,
   message: 2000,
@@ -15,12 +16,18 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 function validate(body) {
   const errors = {};
   const name = typeof body.name === "string" ? body.name.trim() : "";
+  const company = typeof body.company === "string" ? body.company.trim() : "";
   const email = typeof body.email === "string" ? body.email.trim() : "";
   const phone = typeof body.phone === "string" ? body.phone.trim() : "";
   const message = typeof body.message === "string" ? body.message.trim() : "";
 
   if (!name) errors.name = "Enter your name.";
   else if (name.length > LIMITS.name) errors.name = "Name is too long.";
+
+  // Company is optional, matching the client's reference design (no
+  // required marker on this field). Still length-capped like every other
+  // field, since an unvalidated field is still attacker-controlled input.
+  if (company.length > LIMITS.company) errors.company = "Company name is too long.";
 
   if (!email) errors.email = "Enter your email address.";
   else if (email.length > LIMITS.email || !EMAIL_PATTERN.test(email)) {
@@ -33,7 +40,7 @@ function validate(body) {
   if (!message) errors.message = "Enter a message.";
   else if (message.length > LIMITS.message) errors.message = "Message is too long.";
 
-  return { errors, fields: { name, email, phone, message } };
+  return { errors, fields: { name, company, email, phone, message } };
 }
 
 export async function POST(request) {
@@ -45,8 +52,10 @@ export async function POST(request) {
   }
 
   // Honeypot: a field no sighted human fills in. A bot that fills every
-  // field trips this instead of a visible error.
-  if (typeof body.company === "string" && body.company.trim() !== "") {
+  // field trips this instead of a visible error. Renamed from "company" to
+  // "website" when the form gained a real, visible Company field — see
+  // ContactForm for the full reasoning.
+  if (typeof body.website === "string" && body.website.trim() !== "") {
     return Response.json({ ok: true });
   }
 
@@ -61,6 +70,7 @@ export async function POST(request) {
   // credentials exist.
   console.info("[contact] submission received", {
     name: fields.name,
+    company: fields.company,
     email: fields.email,
     phone: fields.phone,
     messageLength: fields.message.length,

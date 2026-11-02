@@ -1,12 +1,8 @@
 import { Container } from "@/components/layout/container";
 import { Section } from "@/components/layout/section";
-import { Eyebrow } from "@/components/ui/eyebrow";
-import { Heading } from "@/components/ui/heading";
-import { Text } from "@/components/ui/text";
-import { Reveal } from "@/components/animations/reveal";
-import { ServiceIndexCard } from "@/components/sections/services-index/service-index-card";
-import { services } from "@/content/services";
-import { images } from "@/content/images";
+import { PageHero } from "@/components/shared/page-hero";
+import { ServiceGroup } from "@/components/sections/services-index/service-group";
+import { services, serviceGroups } from "@/content/services";
 import { site } from "@/content/site";
 
 export const metadata = {
@@ -14,34 +10,60 @@ export const metadata = {
   description: services.lead,
 };
 
-// The same compact intro band ContactPage uses, then all 10 services as
-// cards in one grid — unlike the home page's services panel (which only
-// shows the first 4, with a "View all services" link to here), this page
-// is the full list, so no scope cut needed.
+const servicesBySlug = new Map(services.items.map((service) => [service.slug, service]));
+
+// Resolves each group's { slug, indexDescription } entries against the full
+// service record (for `name`), and assigns a running index number across
+// every group whose own `numbered` flag isn't false (default true — see
+// serviceGroups in src/content/services.js). The client's explicit choice:
+// "Subsurface & reservoir" (numbered: false) shows no number on any of its
+// rows, and the count starts fresh at 1 on the next numbered group,
+// continuing across group boundaries rather than restarting per group — so
+// "Wells, Production & Surface Facilities" (5 items) and "Management"
+// (1 item) read as one continuous 1-6, not two separate counts.
+function resolveGroups(groups) {
+  let nextNumber = 1;
+  return groups.map((group) => {
+    const isNumbered = group.numbered !== false;
+    const items = group.items.map(({ slug, indexDescription }) => ({
+      ...servicesBySlug.get(slug),
+      indexDescription,
+      number: isNumbered ? nextNumber++ : undefined,
+    }));
+    return { ...group, items };
+  });
+}
+
+// Grouped, numbered services list (redesigned 2026-11-02 from a 10-card
+// grid, matching the client's reference image): three category blocks —
+// Subsurface & reservoir, Wells/Production & Surface Facilities, Management
+// — each a left-aligned heading/lead beside a right-column 2-up grid of
+// services. Replaces the previous ServiceIndexCard grid; see
+// src/content/services.js's `serviceGroups` export for the grouping and
+// copy source.
 export default function ServicesPage() {
+  const groups = resolveGroups(serviceGroups);
+
   return (
     <main>
-      <Section as="div" tone="paper" className="pb-0 pt-[calc(var(--spacing-section)*0.6)]">
-        <Container>
-          <Eyebrow>{services.eyebrow}</Eyebrow>
-          <Heading level={1} size="h2" className="mt-5 max-w-[20ch]">
-            {services.heading}
-          </Heading>
-          <Text variant="lead" muted className="mt-6 max-w-[48ch]">
-            {services.lead}
-          </Text>
-        </Container>
-      </Section>
+      <PageHero
+        eyebrow={services.eyebrow}
+        heading={services.heading}
+        lead={services.lead}
+        headingWidth="max-w-[20ch]"
+        leadWidth="max-w-[48ch]"
+        pad="tight"
+      />
 
       <Section tone="paper">
         <Container>
-          <ul className="grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
-            {services.items.map((service, index) => (
-              <Reveal key={service.slug} as="li" y={0} delay={(index % 3) * 0.06}>
-                <ServiceIndexCard service={service} index={index} image={images.services[service.slug]} />
-              </Reveal>
+          <div className="flex flex-col gap-16 sm:gap-20">
+            {groups.map((group, index) => (
+              <div key={group.heading} className={index > 0 ? "border-t border-border pt-16 sm:pt-20" : undefined}>
+                <ServiceGroup group={group} />
+              </div>
             ))}
-          </ul>
+          </div>
         </Container>
       </Section>
     </main>

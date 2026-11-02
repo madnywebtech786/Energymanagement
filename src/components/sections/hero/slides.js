@@ -1,49 +1,38 @@
-import { approach } from "@/content/approach";
-import { guarantee } from "@/content/guarantee";
-import { hero } from "@/content/hero";
-import { images } from "@/content/images";
-
-// The three hero slides. Copy is unchanged from src/content except where
-// noted — this only arranges it for the slider. Only the call-to-action
-// labels on slides 2 and 3 ("See our approach", "How it works") are new;
-// everything else already existed in hero.js, approach.js or guarantee.js.
-// hrefs are plain route paths, resolved by <Button>'s own internal/external
-// split.
-//
-// Slide 1 and 3's headings are shortened from the full sentence in their
-// source file, at the user's request (2026-10-19): same impression, fewer
-// words for the hero's display size. The source files (hero.js,
-// guarantee.js) are untouched — those full sentences are still what /about
-// and the rest of the site use; only this slider gets the short version.
-// Slide 3's reuses "VALUE"/"GUARANTEE" from guarantee.seal.lines, so it
-// isn't new wording, just a shorter arrangement of the same two words.
+// The 2 hero slides for the dark wave hero (built 2026-11-02, replacing the
+// earlier 3-slide photo hero — see "Hero redesign: dark wave variant" in
+// docs/redesign-plan.md's Decisions table for the full design rationale).
+// Copy is the client's own supplied text, verbatim where given; the two
+// button labels/hrefs and the disclaimer line were confirmed with the client
+// against their reference screenshot (not invented — see the same Decisions
+// entry). hrefs are plain route paths, resolved by <Button>'s own
+// internal/external split. `lead` is an array of body paragraphs
+// (HeroContent maps over it) — slide 1 restructured at the client's direct
+// request: "Independent Oil & Gas Consulting" is now the heading itself
+// (previously a separate small eyebrow line above a longer heading), and the
+// sentence that used to be the heading is now the first body paragraph. No
+// separate eyebrow renders above it any more, since the heading now carries
+// that same text.
 export const heroSlides = [
   {
     key: "overview",
-    image: images.hero.field,
-    eyebrow: hero.eyebrow,
-    heading: "Integrated E&P advisory",
-    lead: hero.lead,
-    actions: [hero.actions.primary, hero.actions.secondary],
-    hrefs: ["/services", "/contact"],
+    eyebrow: "",
+    heading: "Independent Oil & Gas Consulting",
+    lead: [
+      "Engineering and geological studies, production support and practical advisory for E&P operators and investors—from reservoir to plant gate.",
+      "Our engineers and geoscientists are led by a former E&P CEO and hands-on engineer with over three decades of global exploration and production experience.",
+    ],
+    note: "If our initial assessment does not add value, you do not pay for it.",
+    actions: ["Discuss your asset", "See what we do"],
+    hrefs: ["/contact", "/services"],
   },
   {
-    key: "approach",
-    image: images.hero.strata,
-    eyebrow: approach.eyebrow,
-    heading: approach.heading,
-    lead: approach.lead,
-    actions: ["See our approach"],
-    hrefs: ["/approach"],
-  },
-  {
-    key: "guarantee",
-    image: images.hero.drawings,
-    eyebrow: guarantee.eyebrow,
-    heading: "Our value guarantee",
-    lead: guarantee.summary,
-    note: guarantee.scope,
-    actions: ["How it works", hero.actions.secondary],
-    hrefs: ["/about#guarantee", "/contact"],
+    key: "experience",
+    eyebrow: "",
+    heading: "Experience That Supports Your Decisions",
+    lead: [
+      "Our leadership's track record includes documented production improvements and successful resolution of multimillion-dollar technical disputes through negotiation. We work with you to understand your challenges and identify practical solutions.",
+    ],
+    actions: ["Discuss your asset", "See our approach"],
+    hrefs: ["/contact", "/approach"],
   },
 ];

@@ -12,6 +12,11 @@ const word = {
 // Reveals a short heading word by word: each word rises out of a mask when the
 // heading scrolls into view. Pass the heading text as the only child. Meant
 // for headings of a dozen words or fewer, below the first screen.
+//
+// Reverted to Motion 2026-11-02: see Reveal's own comment for the full
+// reasoning — a CSS-only version of this and Reveal shipped content
+// invisible on the live site, and was reverted rather than iterated on
+// further without a way to actually observe the failure in a browser.
 export function TextReveal({ children: text, delay = 0, className }) {
   const words = text.split(" ");
 

@@ -1,27 +1,28 @@
+// Client-supplied copy, 2026-11-02 (replaces the previous 5-point draft).
 export const whyUs = {
   eyebrow: "Why work with us",
   heading: "Experienced people. Lower cost. Higher efficiency.",
-  lead: "Our work is led by senior professionals with decades of operating, technical and executive experience at E&P companies. You get the judgement of an experienced operator without the cost of a large consultancy.",
+  lead: "You get the judgement of an oil and gas operator who has carried accountability for safety, production and budgets, without the overhead of a large engineering consultancy.",
   points: [
     {
       title: "Senior-led delivery",
-      text: "Experienced practitioners do the work themselves, not just supervise it.",
-    },
-    {
-      title: "Licensed expert network",
-      text: "We assemble licensed specialists for each engagement, so clients receive stamped, authenticated work products where regulations require them, without carrying permanent overhead.",
+      text: "Experienced practitioners do the work, not just supervise it.",
     },
     {
       title: "Cost discipline",
-      text: "Lean teams scaled to your scope, focused on reducing OPEX and CAPEX.",
+      text: "Lean teams scaled to your scope, focused on reducing opex and capex.",
     },
     {
-      title: "Integrated thinking",
-      text: "Subsurface, wells and production are treated as one system.",
+      title: "Subsurface and surface expertise",
+      text: "Reservoir, wells, production and facilities are treated as one system, by engineers who have worked on both sides of the wellhead.",
     },
     {
       title: "Operator perspective",
-      text: "Recommendations shaped by real accountability for safety, production and budgets.",
+      text: "Recommendations shaped by real responsibility for outcomes.",
+    },
+    {
+      title: "Onshore and offshore",
+      text: "Experience from land and marine assets in some of the most geologically complex reservoirs in the world, adapted to your geology.",
     },
   ],
 };

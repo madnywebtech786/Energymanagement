@@ -55,6 +55,26 @@
   --text-display--letter-spacing: -0.025em;
   --text-display--font-weight: 620;
 
+  /* The dark wave hero's own headline scale. Originally calibrated against
+     a 19-20 word sentence; the heading is now a short 4-5 word phrase
+     ("Independent Oil & Gas Consulting") after the client restructured the
+     slide, so the ceiling was raised (3rem -> 3.75rem -> 4.25rem) and the
+     wrap column narrowed (see HeroContent's max-w-[18ch]) at the client's
+     direct request to size it up and let it wrap across more lines, rather
+     than stay a single wide line. The floor was raised again, separately
+     (2rem -> 2.25rem -> 2.75rem), at the client's specific request to size
+     up the heading on small screens — the vw coefficient was also nudged
+     down slightly so the curve still reaches the same 4.25rem ceiling at
+     the same ~1440px reference width instead of overshooting it with a
+     higher floor and an unchanged slope. Line-height/weight (tight, 580)
+     are unchanged from the previous tuning pass against the client's
+     reference. Used only by HeroContent — --text-display itself is
+     untouched for any future short-headline use. */
+  --text-hero-heading: clamp(2.75rem, 2.2rem + 2.3vw, 4.25rem);
+  --text-hero-heading--line-height: 1.02;
+  --text-hero-heading--letter-spacing: -0.02em;
+  --text-hero-heading--font-weight: 580;
+
   --text-h1: clamp(2.375rem, 1.5rem + 3.9vw, 4.75rem);
   --text-h1--line-height: 1.02;
   --text-h1--letter-spacing: -0.03em;
@@ -89,6 +109,16 @@
 
   --text-small: 0.875rem;
   --text-small--line-height: 1.5;
+
+  /* The dark wave hero's own paragraph size, sized up twice at the client's
+     direct request: 14px (first pass) -> 15px -> 18px, now past
+     --text-reading's sitewide floor (17px) rather than staying below it —
+     a deliberate change from the previous note here, since the client
+     asked again for it bigger still. Fluid so it keeps growing a little on
+     very wide screens instead of capping at a fixed size. Used only by
+     HeroContent. */
+  --text-hero-lead: clamp(1.125rem, 1.02rem + 0.5vw, 1.3125rem);
+  --text-hero-lead--line-height: 1.5;
 
   --text-label: 0.75rem;
   --text-label--line-height: 1.2;
@@ -191,14 +221,22 @@
     }
   }
 
-  /* Hero slide-indicator fill. A plain CSS animation (not Motion) so it
+  /* Hero slide-indicator fill: a ring around the active dot scales from
+     full size down to empty over the autoplay interval, reading as the
+     remaining time shrinking toward the centre. Replaces the original
+     thin-bar indicator's left-to-right scaleX fill (hero-fill) when the
+     indicators became round dots at the client's direct request ("add dots
+     for the slides") — a shrinking ring suits a circular shape better than
+     reusing a linear fill would. A plain CSS animation (not Motion), so it
      keeps running even while Motion's own chunk is still loading. */
-  @keyframes hero-fill {
+  @keyframes hero-ring {
     from {
-      transform: scaleX(0);
+      transform: scale(1);
+      opacity: 1;
     }
     to {
-      transform: scaleX(1);
+      transform: scale(0.35);
+      opacity: 0;
     }
   }
 }

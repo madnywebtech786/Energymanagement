@@ -51,34 +51,72 @@ export function HeroContent({ slide, isPageHeading, animated = true }) {
 
   return (
     <div>
-      <m.div key={`eyebrow-${slide.key}`} {...rise(0, animated)}>
-        <Eyebrow rule={false} tone="ink">
-          {slide.eyebrow}
-        </Eyebrow>
-      </m.div>
+      {slide.eyebrow && (
+        <m.div key={`eyebrow-${slide.key}`} {...rise(0, animated)}>
+          <Eyebrow rule={false} tone="ink">
+            {slide.eyebrow}
+          </Eyebrow>
+        </m.div>
+      )}
 
       <HeadingTag
         key={`heading-${slide.key}`}
         {...clip(STEP, animated)}
-        className="mt-hero-eyebrow max-w-[20ch] text-balance text-display"
+        className="mt-hero-eyebrow max-w-[18ch] text-balance text-hero-heading"
       >
         {typeset(slide.heading)}
       </HeadingTag>
 
       <m.div key={`lead-${slide.key}`} {...rise(STEP * 2.3, animated)}>
-        <p className="mt-hero-heading max-w-[42ch] border-border-strong/60 font-serif text-lead lg:border-l lg:pl-6">
-          {typeset(slide.lead)}
+        {/* Sans-serif, flush-left, no border: matches the client's exact
+            reference for this hero. Every other page's lead/reading text
+            keeps the site's established serif pairing unchanged — this is a
+            scoped exception for this one component, confirmed with the
+            client after an earlier answer (keep serif) was superseded by a
+            closer look at their actual reference screenshot. One merged
+            paragraph (the client's two sentences joined, not a new one
+            invented), at the hero's own scoped text-hero-lead size (see
+            globals.css), widened to max-w-[56ch] (was 42ch) to use more of
+            the available column now that the text itself is bigger. */}
+        <p className="mt-hero-heading max-w-[56ch] text-hero-lead">
+          {slide.lead.map(typeset).join(" ")}
         </p>
         {slide.note && (
-          // Navy, not muted-foreground: this sits over a hero photo, where
-          // only navy text clears 4.5:1 (see .veil in globals.css).
+          // text-foreground resolves through .theme-deep to the light
+          // deep-foreground token (15.6:1 on the deep background, well past
+          // the 4.5:1 floor) — kept from the photo-hero version of this
+          // slide, where the same class was required for the same reason
+          // against a photo veil instead of this flat dark background.
+          // Plain, not italic: matches the client's reference screenshot.
           <p className="mt-4 max-w-[48ch] text-small text-foreground">{slide.note}</p>
         )}
       </m.div>
 
       <m.div key={`actions-${slide.key}`} {...rise(STEP * 3.6, animated)} className="mt-hero-actions flex flex-wrap gap-3">
         {slide.actions.map((label, index) => (
-          <Button key={label} href={slide.hrefs[index]} variant={index === 0 ? "primary" : "secondary"}>
+          // icon={null}: the reference shows plain text buttons, no arrow
+          // cell — a scoped exception for this hero; every other button
+          // sitewide keeps its arrow unchanged. The primary button's fill is
+          // also overridden here to the site's existing accent-graphic teal
+          // (#14b8a6, already defined in globals.css — not a new colour)
+          // instead of Button's own default navy/white, matching the
+          // reference; text stays dark (text-deep) on that fill rather than
+          // white, reusing the same contrast-safe pairing Button's own
+          // primary variant already uses on hover (white on this teal
+          // measures 2.49:1, below the site's 4.5:1 floor — documented on
+          // Button itself). Scoped to these two hero buttons only; every
+          // other primary button sitewide keeps Button's own default look.
+          <Button
+            key={label}
+            href={slide.hrefs[index]}
+            variant={index === 0 ? "primary" : "secondary"}
+            icon={null}
+            className={
+              index === 0
+                ? "!border-accent-graphic !bg-accent-graphic !text-deep hover:!border-primary hover:!bg-primary hover:!text-primary-foreground focus-visible:!border-primary focus-visible:!bg-primary focus-visible:!text-primary-foreground"
+                : undefined
+            }
+          >
             {label}
           </Button>
         ))}

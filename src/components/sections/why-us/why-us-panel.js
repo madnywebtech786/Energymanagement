@@ -8,7 +8,9 @@ import { Reveal } from "@/components/animations/reveal";
 import { TextReveal } from "@/components/animations/text-reveal";
 import { Parallax } from "@/components/animations/parallax";
 
-// Five qualities, not a process — no step numbers. The photo sits once on
+// Five qualities (client-supplied copy, 2026-11-02; a 6th, "Licensed expert
+// network", was cut at the client's request the same day), not a process —
+// no step numbers. The photo sits once on
 // the left (not alternating; this section has one idea, not a sequence of
 // panels like ServicesPanel), and the points run as a divided list beside
 // it rather than five identical icon-cards. The photo drifts at scroll

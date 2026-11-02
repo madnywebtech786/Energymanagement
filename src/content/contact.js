@@ -2,6 +2,18 @@ export const contact = {
   eyebrow: "Contact",
   heading: "Let's discuss your asset",
   lead: "Contact us for a confidential conversation about production, reservoir, well integrity or field development challenges.",
+  // The home page's embedded ContactSection has its own heading/lead/intro
+  // (new 2026-11-02, verbatim from the client's reference screenshot),
+  // separate from the fields above: those still serve /contact's own
+  // PageHero and metadata description unchanged, and ContactSection's
+  // previous copy duplicated ContactCta's own heading right above it
+  // anyway, so this is a genuine fix, not just new content.
+  section: {
+    heading: "Bring us your hardest asset question.",
+    lead: "A confidential conversation, no obligation. We reply within one business day.",
+    supportingText:
+      "We work with national oil companies, international and independent E&P operators, investors and lenders on onshore and offshore assets in Canada, Pakistan, the Middle East, North Africa and Southeast Asia.",
+  },
   cta: {
     eyebrow: "Ready when you are",
     heading: "Bring us your hardest asset question",
@@ -9,6 +21,7 @@ export const contact = {
   },
   form: {
     name: { label: "Name" },
+    company: { label: "Company" },
     email: { label: "Email" },
     phone: { label: "Phone" },
     message: { label: "Message", hint: "What asset or challenge would you like to discuss?" },
@@ -23,8 +36,8 @@ export const contact = {
   details: {
     email: {
       label: "Email",
-      value: "sikandar_memon10@yahoo.com",
-      href: "mailto:sikandar_memon10@yahoo.com",
+      value: "info@emconsultingsolutions.ca",
+      href: "mailto:info@emconsultingsolutions.ca",
     },
     phone: {
       label: "Telephone",

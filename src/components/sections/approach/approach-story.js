@@ -5,13 +5,26 @@ import { Section } from "@/components/layout/section";
 import { Eyebrow } from "@/components/ui/eyebrow";
 import { Heading } from "@/components/ui/heading";
 import { Text } from "@/components/ui/text";
+import { Link } from "@/components/ui/link";
 import { Reveal } from "@/components/animations/reveal";
 import { useScrollActiveIndex } from "@/hooks/use-scroll-active-index";
 import { cx } from "@/lib/cx";
 
 // The six lifecycle stages, Assess through Sustain. Mobile: one vertical
-// column, each stage's number circle linked to the next by a hairline.
-// Desktop (`lg` and up): a classic alternating timeline — a central spine
+// column, each stage's number circle linked to the next by a hairline. Each
+// mobile step's height comes from its own content plus its own bottom
+// padding (pb-12/pb-16 on the content column), not a fixed viewport
+// fraction — a previous min-h-[25vh] on the <li> (reverted 2026-11-02)
+// forced every step to a fixed 211px-tall block on a typical phone
+// viewport, well past the ~90-100px the actual heading+description content
+// needs, which meant useScrollActiveIndex's trigger line (30% from the
+// viewport top) took far more scroll distance to reach each next stage than
+// its content warranted — felt like activation lagging behind what was on
+// screen, and like the connecting line's teal fill wasn't keeping up
+// (because the fill/empty boundary itself was scrolled well past view by
+// the time the next stage activated), though the fill mechanism (StepLine)
+// was never actually broken. Desktop (`lg` and up): a classic alternating
+// timeline — a central spine
 // with each stage's content on alternating sides (odd stages left, even
 // stages right), connected to its own node on the spine. This is a
 // simplified, self-contained preview of the idea, not the full page-wide
@@ -25,7 +38,13 @@ import { cx } from "@/lib/cx";
 // as the timeline itself scrolls into view (not after it reaches the
 // screen's centre), and each later stage takes over the moment it, in
 // turn, is reached — one at a time, in order.
-export function ApproachStory({ approach }) {
+// `stageServices`, when passed, is an array parallel to `approach.stages`
+// (one services array per stage, see stageServices in content/approach.js)
+// — each stage then lists which services sit there. Optional and unused by
+// the home page's own call (ApproachStory there is a shorter preview of
+// the idea, not the full /approach page), so passing nothing here keeps
+// that render exactly as it already is.
+export function ApproachStory({ approach, stageServices }) {
   // Two separate instances: the mobile and desktop lists are both present
   // in the DOM at once (one hidden via CSS, per breakpoint), so sharing one
   // hook instance would mean both layouts' refs for the same index collide
@@ -65,6 +84,7 @@ export function ApproachStory({ approach }) {
               total={approach.stages.length}
               active={index === activeIndexMobile}
               lineDone={index <= activeIndexMobile}
+              services={stageServices?.[index]}
               ref={registerStepRefMobile(index)}
             />
           ))}
@@ -85,6 +105,7 @@ export function ApproachStory({ approach }) {
               total={approach.stages.length}
               active={index === activeIndexDesktop}
               lineDone={index <= activeIndexDesktop}
+              services={stageServices?.[index]}
               ref={registerStepRefDesktop(index)}
             />
           ))}
@@ -94,10 +115,10 @@ export function ApproachStory({ approach }) {
   );
 }
 
-function TimelineStep({ stage, index, total, active, lineDone, ref }) {
+function TimelineStep({ stage, index, total, active, lineDone, services, ref }) {
   const isLast = index === total - 1;
   return (
-    <li ref={ref} data-index={index} className="flex min-h-[25vh] gap-6 sm:gap-10">
+    <li ref={ref} data-index={index} className="flex gap-6 sm:gap-10">
       <div className="flex flex-col items-center">
         <StepNode index={index} active={active} />
         {!isLast && <StepLine done={lineDone} />}
@@ -109,12 +130,13 @@ function TimelineStep({ stage, index, total, active, lineDone, ref }) {
         <Text variant="small" muted className="mt-2 max-w-[42ch]">
           {stage.text}
         </Text>
+        {services?.length > 0 && <StageServices services={services} />}
       </Reveal>
     </li>
   );
 }
 
-function TimelineStepDesktop({ stage, index, total, active, lineDone, ref }) {
+function TimelineStepDesktop({ stage, index, total, active, lineDone, services, ref }) {
   const isLast = index === total - 1;
   const onRight = index % 2 === 1;
   const content = (
@@ -125,6 +147,7 @@ function TimelineStepDesktop({ stage, index, total, active, lineDone, ref }) {
       <Text variant="small" muted className={cx("mt-3 max-w-[36ch]", onRight ? "" : "ml-auto")}>
         {stage.text}
       </Text>
+      {services?.length > 0 && <StageServices services={services} align={onRight ? "left" : "right"} />}
     </Reveal>
   );
 
@@ -137,6 +160,24 @@ function TimelineStepDesktop({ stage, index, total, active, lineDone, ref }) {
       </div>
       {onRight ? content : <span />}
     </li>
+  );
+}
+
+// The services that sit at this stage, as plain text links — not another
+// row of cards (there are already full service cards on /services and the
+// home page), just a short list that lets someone jump straight from "what
+// happens at this stage" to the specific service that covers it.
+function StageServices({ services, align = "left" }) {
+  return (
+    <ul className={cx("mt-4 flex flex-col gap-1.5", align === "right" && "items-end")}>
+      {services.map((service) => (
+        <li key={service.slug}>
+          <Link href={`/services/${service.slug}`} variant="quiet" className="text-small">
+            {service.name}
+          </Link>
+        </li>
+      ))}
+    </ul>
   );
 }
 

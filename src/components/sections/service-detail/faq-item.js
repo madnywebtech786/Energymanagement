@@ -32,7 +32,7 @@ export function FaqItem({ question, answer }) {
       onToggle={(event) => setOpen(event.currentTarget.open)}
     >
       <summary className="flex cursor-pointer list-none items-center gap-5 px-6 py-5 text-left marker:content-none sm:px-8 sm:py-6 [&::-webkit-details-marker]:hidden">
-        <Text variant="reading" as="span" className="flex-1 text-[1rem] font-medium text-foreground sm:text-[1.125rem]">
+        <Text variant="reading" as="span" className="flex-1 text-[1rem] font-bold text-foreground sm:text-[1.125rem]">
           {question}
         </Text>
         <span className="grid size-9 shrink-0 place-items-center rounded-full border border-border-strong/50 text-accent-graphic transition-colors duration-(--duration-base) ease-out-quart group-open:border-accent-graphic group-open:bg-accent-graphic group-open:text-deep">

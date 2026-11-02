@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { services } from "@/content/services";
 import { serviceDetails } from "@/content/service-details";
 import { approach } from "@/content/approach";
-import { images } from "@/content/images";
 import { site } from "@/content/site";
 import { ServiceHero } from "@/components/sections/service-detail/service-hero";
 import { ServicePainPoints } from "@/components/sections/service-detail/service-pain-points";
@@ -12,7 +11,7 @@ import { ServiceScope } from "@/components/sections/service-detail/service-scope
 import { ServiceLifecycle } from "@/components/sections/service-detail/service-lifecycle";
 import { ServiceFaq } from "@/components/sections/service-detail/service-faq";
 import { ServiceRelated } from "@/components/sections/service-detail/service-related";
-import { ServiceClosingCta } from "@/components/sections/service-detail/service-closing-cta";
+import { ClosingCta } from "@/components/shared/closing-cta";
 
 const getService = (slug) => services.items.find((item) => item.slug === slug);
 
@@ -63,7 +62,6 @@ async function Service({ params }) {
   if (!service) notFound();
 
   const detail = serviceDetails[slug];
-  const image = images.services[slug];
   const relatedServices = (detail?.relatedSlugs ?? [])
     .map((relatedSlug) => getService(relatedSlug))
     .filter(Boolean);
@@ -99,7 +97,7 @@ async function Service({ params }) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }}
       />
 
-      <ServiceHero service={service} image={image} />
+      <ServiceHero service={service} />
 
       {detail?.painPoints && <ServicePainPoints points={detail.painPoints} />}
       {detail?.approach && <ServiceApproach paragraphs={detail.approach} />}
@@ -114,7 +112,11 @@ async function Service({ params }) {
 
       <ServiceRelated services={relatedServices} />
 
-      <ServiceClosingCta serviceName={service.name} />
+      <ClosingCta
+        heading={`Talk to us about ${service.name.replace(/\s*Advisory$/, "")}`}
+        lead="A confidential conversation about your asset, no obligation."
+        action={{ label: "Discuss your asset", href: "/contact" }}
+      />
     </main>
   );
 }

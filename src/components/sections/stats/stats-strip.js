@@ -1,64 +1,52 @@
 import { Container } from "@/components/layout/container";
+import { Section } from "@/components/layout/section";
 import { Reveal } from "@/components/animations/reveal";
 import { CountUp } from "@/components/animations/count-up";
-import { cx } from "@/lib/cx";
 
-// The four hero stats, moved under the slider (see docs/redesign-plan.md,
-// "reference: hero slides"). Only the first stat is a number ("35+"): the
-// other three are short phrases ("End-to-end", "Multi-discipline", "Global"),
-// so CountUp only wraps stats[0] and the rest render as plain text.
+// Relocated from directly under the hero slider to a quiet transitional
+// band between ApproachStory (tone="surface") and WhyUsPanel (tone="paper")
+// — it now reads as a lead-in to the "why work with us" case right after it,
+// rather than competing with the hero for attention before a visitor has
+// seen anything else. `tone="paper"` matches WhyUsPanel so the two feel
+// like one continuous beat, not two separate bands.
 //
-// Redesigned from a flat, divider-less grid (the weakest piece of visual
-// craft on the page next to everything else) into cells on the site's own
-// hairline-and-tabular-numeral language: a thin index mark per stat, a
-// rule between every cell (computed per-position below, not fought for
-// with nth-child selectors), each cell's value given real serif weight
-// instead of sitting at the same visual register as its own label.
-//
-// Grid is 2 columns under `lg`, 4 columns from `lg` up. A cell gets a
-// right rule unless it's the last column in its row, and a bottom rule
-// unless it's the last row — computed from `index` against the active
-// column count at each breakpoint, since that's genuinely two different
-// grids, not one grid reflowing.
+// Redesigned from four identical cells (each forced into the same large
+// serif "value" treatment regardless of whether it held a real number) into
+// an honest split: only `stats[0]` ("35+ years") is an actual metric, so it
+// stands alone with real visual weight (CountUp, serif, large), while the
+// other three ("End-to-end", "Multi-discipline", "Global") are short
+// capability phrases, not numbers — they now read as a compact divided
+// list beside the figure instead of three more oversized "stat" boxes
+// pretending to be numbers they aren't.
 export function StatsStrip({ stats }) {
-  const count = stats.length;
+  const [headline, ...facts] = stats;
 
   return (
-    <section className="border-t border-border">
+    <Section tone="paper" ruled>
       <Container>
-        <dl className="grid grid-cols-2 lg:grid-cols-4">
-          {stats.map((stat, index) => {
-            const isLastColMobile = index % 2 === 1;
-            const isLastRowMobile = index >= count - (count % 2 === 0 ? 2 : 1);
-            const isLastColDesktop = index === count - 1;
+        <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
+          <Reveal>
+            <span className="font-serif text-[clamp(3.5rem,6vw,5rem)] leading-none text-foreground">
+              <CountUp to={35} suffix="+" />
+            </span>
+            <p className="mt-3 max-w-[26ch] text-small text-muted-foreground">{headline.label}</p>
+          </Reveal>
 
-            return (
+          <dl className="grid grid-cols-1 gap-x-10 gap-y-6 border-t border-border pt-8 sm:grid-cols-3 sm:gap-y-0 sm:border-t-0 sm:pt-0 lg:border-l lg:border-t-0 lg:pl-16 lg:pt-0">
+            {facts.map((fact, index) => (
               <Reveal
-                key={stat.label}
+                key={fact.label}
                 as="div"
-                delay={index * 0.06}
-                className={cx(
-                  "py-8 pr-6 lg:py-10 lg:pr-8",
-                  !isLastColMobile && "border-r border-border pr-6",
-                  !isLastRowMobile && "border-b border-border",
-                  isLastColMobile && "pl-6",
-                  "lg:border-b-0 lg:pl-0",
-                  !isLastColDesktop && "lg:border-r lg:pr-8",
-                  index > 0 && "lg:border-l lg:pl-8",
-                )}
+                delay={0.08 + index * 0.06}
+                className="sm:border-l sm:border-border sm:first:border-l-0 sm:pl-8 sm:first:pl-0"
               >
-                <span className="text-label tabular-nums text-accent-graphic">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <dd className="mt-3 font-serif text-h3 text-foreground">
-                  {index === 0 ? <CountUp to={35} suffix="+" /> : stat.value}
-                </dd>
-                <dt className="mt-2 max-w-[22ch] text-small text-muted-foreground">{stat.label}</dt>
+                <dt className="font-serif text-h4 text-foreground">{fact.value}</dt>
+                <dd className="mt-1.5 max-w-[22ch] text-small text-muted-foreground">{fact.label}</dd>
               </Reveal>
-            );
-          })}
-        </dl>
+            ))}
+          </dl>
+        </div>
       </Container>
-    </section>
+    </Section>
   );
 }

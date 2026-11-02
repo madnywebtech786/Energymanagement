@@ -4,10 +4,9 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { Pause, Play } from "lucide-react";
 import * as m from "motion/react-m";
 import { AnimatePresence } from "motion/react";
-import { Photo } from "@/components/ui/photo";
 import { HeroContent } from "./hero-content";
-import { HeroFrame } from "./hero-frame";
 import { HeroIndicators } from "./hero-indicators";
+import { HeroWaves } from "./hero-waves";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { DURATION, EASE } from "@/lib/motion";
 
@@ -133,7 +132,7 @@ export function HeroSlider({ slides }) {
       ref={rootRef}
       aria-roledescription="carousel"
       aria-label="Introduction"
-      className="relative isolate min-h-dvh overflow-hidden bg-foreground"
+      className="theme-deep relative isolate min-h-dvh overflow-hidden bg-background"
       onMouseEnter={setHover(true)}
       onMouseLeave={setHover(false)}
       onFocus={onFocus}
@@ -141,33 +140,10 @@ export function HeroSlider({ slides }) {
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
-      {/* Every photo is in the DOM from the start (not just the active one):
-          slide 0 is the LCP candidate and needs fetchPriority="high" before
-          any client code runs, and the inactive photos warm in behind it so
-          the first autoplay swap never pops in a half-loaded image. */}
-      {slides.map((item, index) => (
-        <div
-          key={item.key}
-          aria-hidden={index !== active}
-          className="absolute inset-0 transition-opacity duration-(--duration-slow) ease-out-expo"
-          style={{ opacity: index === active ? 1 : 0 }}
-        >
-          <Photo
-            image={item.image}
-            alt=""
-            sizes="100vw"
-            fetchPriority={index === 0 ? "high" : undefined}
-            className="absolute inset-0"
-          />
-          <div
-            aria-hidden="true"
-            className="veil absolute inset-0 z-veil"
-            style={{ "--veil-core": `${item.image.veil.core}%`, "--veil-edge": `${item.image.veil.edge}%` }}
-          />
-        </div>
-      ))}
-
-      <HeroFrame index={active + 1} total={slides.length} />
+      {/* The wave background is static art: one render, never swapped or
+          crossfaded between slides. Only the text content below animates on
+          slide change — the client's explicit instruction. */}
+      <HeroWaves />
 
       {/* Content is vertically centered at every width, in a box that is
           always a full dynamic-viewport-height tall (min-h-dvh, no
@@ -175,17 +151,16 @@ export function HeroSlider({ slides }) {
           below the sm breakpoint was shorter than most real phones in
           portrait, leaving a visible gap below the content instead of
           actually centering it on-screen.
-          Right padding is the page's normal `pr-gutter`, same as every
-          other section. Left padding is `pl-gutter-mark`/
-          `sm:pl-gutter-mark-sm` — the gutter plus HeroFrame's corner mark,
-          added once in globals.css and read here as a plain responsive
-          utility, not a one-off calc(). */}
+          Padding is the page's normal `px-gutter`, same as every other
+          section — the extra `pl-gutter-mark` offset this column used to
+          carry only existed to clear HeroFrame's corner bracket, which this
+          hero no longer renders. */}
       <div
         role="tabpanel"
         id={ids.panel(active)}
         aria-labelledby={ids.tab(active)}
         aria-live={effectivelyPaused ? "polite" : "off"}
-        className="relative z-hero-content flex min-h-dvh items-center py-20 pr-gutter pl-gutter-mark sm:py-24 sm:pl-gutter-mark-sm"
+        className="relative z-hero-content flex min-h-dvh items-center px-gutter py-20 sm:py-24"
       >
         <div className="w-full max-w-page">
           {hasNavigated ? (
