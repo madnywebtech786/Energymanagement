@@ -448,6 +448,27 @@
         color-mix(in srgb, var(--color-background) var(--veil-core), transparent);
     }
   }
+
+  /* The dark wave hero's background field (HeroWaves): a CSS custom property
+     so the same opacity value can be boosted at a breakpoint, the same
+     pattern .veil above already uses. On a narrow viewport the teal lines
+     read lighter than on desktop even though their colour and opacity value
+     in the markup never change — the SVG's preserveAspectRatio="none"
+     stretch leaves each 1-unit stroke rendering under 1 physical pixel at
+     common phone widths, and sub-pixel strokes get anti-aliased by the
+     browser into a fainter smudge. Raising the opacity on small screens
+     compensates for that perceived lightening without changing stroke width
+     (confirmed with the client: the thinner line itself reads correctly,
+     only the colour looked washed out). */
+  .hero-waves {
+    --hero-waves-opacity: 0.4;
+  }
+
+  @media (max-width: 40rem) {
+    .hero-waves {
+      --hero-waves-opacity: 0.6;
+    }
+  }
 }
 
 /* ==========================================================================
