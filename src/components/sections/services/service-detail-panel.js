@@ -25,7 +25,7 @@ export function ServiceDetailPanel({ service, index }) {
 
       <div>
         <Heading level={3} size="h2" className="max-w-[20ch]">
-          <TextReveal>{service.name}</TextReveal>
+          <TextReveal>{service.homeDisplayName ?? service.name}</TextReveal>
         </Heading>
         <Reveal delay={0.1}>
           <Text variant="reading" muted className="mt-6 max-w-[60ch]">

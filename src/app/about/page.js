@@ -10,7 +10,6 @@ import { leadership } from "@/content/leadership";
 import { whyUs } from "@/content/why-us";
 import { guarantee } from "@/content/guarantee";
 import { legal } from "@/content/legal";
-import { images } from "@/content/images";
 import { site } from "@/content/site";
 
 export const metadata = {
@@ -30,7 +29,7 @@ export default function AboutPage() {
     <main>
       <PageHero eyebrow={about.eyebrow} heading={about.heading} lead={about.lead} />
       <LeadershipTeaser leadership={leadership} />
-      <WhyUsPanel whyUs={whyUs} image={images.whyUs} />
+      <WhyUsPanel whyUs={whyUs} />
       <GuaranteeSection guarantee={guarantee} />
       <ProfessionalResponsibility responsibility={legal.responsibility} apega={legal.responsibility.apega} />
       <AboutFaq faq={about.faq} />

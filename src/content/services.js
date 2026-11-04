@@ -4,6 +4,18 @@
 // service's existing tagline and bullets as 3-4 lines of prose for the home
 // page's desktop services panels — no new claims, metrics or scope beyond
 // what was already in `tagline`/`bullets`.
+//
+// `homeDisplayName` (added 2026-11-05) is the home page's own heading text
+// for the 4 featured services, read only by ServiceDetailPanel/ServiceCardMobile
+// (`service.homeDisplayName ?? service.name`) — never by /services, a
+// service detail page, JSON-LD or the header's services nav, which all read
+// `name` directly. The client's explicit choice: "Advisory" should show on
+// the home page's service headings but nowhere else, after `name` itself
+// had "Advisory" removed sitewide on 2026-11-04 — a separate field here
+// rather than re-adding the suffix to `name` (which every other surface
+// shares) or bolting it on as a second line in the component (tried first,
+// the client flagged it as not looking good — this field holds the real
+// string the client wants shown, not a visual fragment assembled in JSX).
 export const services = {
   eyebrow: "Services",
   heading: "Engineering and geoscience support across subsurface and surface E&P operations.",
@@ -11,7 +23,7 @@ export const services = {
   items: [
     {
       slug: "production-optimization",
-      name: "Production Optimization Advisory",
+      name: "Production Optimization",
       tagline: "Identify and capture production gains across wells and networks.",
       description:
         "We identify and capture production gains across wells and networks through nodal and network analysis, well performance reviews and deliverability studies. Debottlenecking work targets the constraints holding production back, while flow assurance, scale and sand management protect the gains once they are made.",
@@ -24,7 +36,8 @@ export const services = {
     },
     {
       slug: "reservoir-management",
-      name: "Reservoir Management Advisory",
+      name: "Reservoir Management",
+      homeDisplayName: "Reservoir Management Advisory",
       tagline: "Understand reservoir behaviour and plan the best recovery strategy.",
       description:
         "We help you understand reservoir behaviour and plan the best recovery strategy for your asset. Reserves and resource assessments, decline curve and material balance analysis establish where a reservoir stands today, and reservoir simulation and forecasting inform what comes next. Waterflood, EOR and recovery studies then test the options available to improve recovery.",
@@ -37,7 +50,8 @@ export const services = {
     },
     {
       slug: "subsurface-geological",
-      name: "Subsurface & Geological Advisory",
+      name: "Subsurface & Geological",
+      homeDisplayName: "Subsurface & Geological Advisory",
       tagline: "Build reliable subsurface models to reduce drilling risk.",
       description:
         "We build reliable subsurface models that reduce drilling risk, starting from structural and stratigraphic interpretation and petrophysical log evaluation. Static modelling and volumetrics turn that interpretation into a dependable picture of the subsurface, which in turn supports prospect maturation and well placement decisions.",
@@ -50,7 +64,7 @@ export const services = {
     },
     {
       slug: "well-integrity",
-      name: "Well Integrity Advisory",
+      name: "Well Integrity",
       tagline: "Manage well risk throughout the well lifecycle.",
       description:
         "We manage well risk throughout the well lifecycle, from well integrity management systems to barrier assessment and annulus pressure reviews. Corrosion and casing evaluation identify where a well's condition needs attention, and that understanding carries through into workover, suspension and abandonment planning.",
@@ -63,7 +77,7 @@ export const services = {
     },
     {
       slug: "artificial-lift",
-      name: "Artificial Lift Advisory",
+      name: "Artificial Lift",
       tagline: "Choose and run lift systems that last longer and cost less.",
       bullets: [
         "ESP, rod pump, PCP & gas lift selection",
@@ -75,6 +89,11 @@ export const services = {
     {
       slug: "field-development-planning",
       name: "Field Development Planning",
+      // Already had no "Advisory" in `name` before 2026-11-04's removal pass
+      // (this is one of the 2 services that never carried the suffix), so
+      // homeDisplayName adds it here specifically for the home page only,
+      // same as every other item's field.
+      homeDisplayName: "Field Development Planning Advisory",
       tagline: "Turn discoveries and mature fields into economic development plans.",
       // DRAFT, added 2026-11-02 so this service's home-page panel/card reads
       // at the same length as the rest of the featured four (see
@@ -91,7 +110,7 @@ export const services = {
     },
     {
       slug: "well-intervention",
-      name: "Well Intervention Advisory",
+      name: "Well Intervention",
       tagline: "Restore and grow well output with safe, cost-effective interventions.",
       bullets: [
         "Candidate selection & opportunity ranking",
@@ -103,7 +122,7 @@ export const services = {
     },
     {
       slug: "wells-completions",
-      name: "Wells & Completions Advisory",
+      name: "Wells & Completions",
       tagline: "Design wells and completions for long-term productivity.",
       bullets: [
         "Completion design & selection",
@@ -115,6 +134,9 @@ export const services = {
     {
       slug: "asset-evaluation-due-diligence",
       name: "Asset Evaluation & Due Diligence",
+      // Same note as Field Development Planning above: never had "Advisory"
+      // in `name`, added here for the home page only.
+      homeDisplayName: "Asset Evaluation & Due Diligence Advisory",
       tagline: "Independent technical views for transactions and investment decisions.",
       // DRAFT, added 2026-11-02 — see Field Development Planning's own
       // description above for why.
@@ -129,7 +151,7 @@ export const services = {
     },
     {
       slug: "management-advisory",
-      name: "Management Advisory",
+      name: "Management",
       tagline:
         "Executive-level support that connects technical results with business priorities.",
       bullets: [

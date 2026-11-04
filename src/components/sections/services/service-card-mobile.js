@@ -76,7 +76,7 @@ export const ServiceCardMobile = forwardRef(function ServiceCardMobile(
         </div>
 
         <Heading level={3} size="h4" className="mt-4 max-w-[22ch]">
-          {service.name}
+          {service.homeDisplayName ?? service.name}
         </Heading>
         <Text variant="small" muted className="mt-3">
           {service.description ?? service.tagline}

@@ -11,6 +11,14 @@ import { DURATION, EASE } from "@/lib/motion";
 
 const INITIAL = { name: "", company: "", email: "", phone: "", message: "" };
 
+// Keys /api/contact can return inside `errors` that map to a real Field on
+// this form, as opposed to "form" — a route-level failure (malformed body,
+// or a Nodemailer delivery failure) with nowhere on the page to anchor an
+// inline error. Distinguishing the two matters: a `form`-only errors object
+// must still trigger the generic banner below, not be read as "no errors"
+// just because none of them match a field.
+const FIELD_NAMES = ["name", "company", "email", "phone", "message"];
+
 // A controlled form posting to /api/contact — a normal client-side fetch,
 // the same pattern any React form uses. No useActionState here: that hook
 // binds to a Server Function, and this endpoint is a Route Handler (the
@@ -62,6 +70,7 @@ export function ContactForm({ copy }) {
   }
 
   const pending = status === "pending";
+  const hasFieldErrors = FIELD_NAMES.some((name) => fieldErrors[name]);
 
   if (status === "success") {
     return (
@@ -167,7 +176,7 @@ export function ContactForm({ copy }) {
         error={fieldErrors.message}
       />
 
-      {status === "error" && Object.keys(fieldErrors).length === 0 && (
+      {status === "error" && !hasFieldErrors && (
         <p role="alert" className="flex items-start gap-2 text-small text-danger">
           <CircleAlert aria-hidden="true" strokeWidth={1.5} className="mt-0.5 size-4 shrink-0" />
           {copy.error}

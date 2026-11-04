@@ -113,7 +113,7 @@ async function Service({ params }) {
       <ServiceRelated services={relatedServices} />
 
       <ClosingCta
-        heading={`Talk to us about ${service.name.replace(/\s*Advisory$/, "")}`}
+        heading={`Talk to us about ${service.name}`}
         lead="A confidential conversation about your asset, no obligation."
         action={{ label: "Discuss your asset", href: "/contact" }}
       />

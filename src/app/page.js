@@ -17,7 +17,6 @@ import { guarantee } from "@/content/guarantee";
 import { leadership } from "@/content/leadership";
 import { homeFaq } from "@/content/home-faq";
 import { contact } from "@/content/contact";
-import { images } from "@/content/images";
 
 const servicesBySlug = new Map(services.items.map((service) => [service.slug, service]));
 
@@ -36,7 +35,7 @@ export default function HomePage() {
       <ServicesPanel services={services} previewItems={subsurfaceReservoirPreview} />
       <ApproachStory approach={approach} />
       <StatsStrip stats={hero.stats} />
-      <WhyUsPanel whyUs={whyUs} image={images.whyUs} />
+      <WhyUsPanel whyUs={whyUs} tight />
       <GuaranteeSection guarantee={guarantee} />
       <LeadershipTeaser leadership={leadership} />
       <HomeFaq faq={homeFaq} />

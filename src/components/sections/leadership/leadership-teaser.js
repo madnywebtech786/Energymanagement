@@ -25,10 +25,28 @@ import { TextReveal } from "@/components/animations/text-reveal";
 //
 // Registration/APEGA status is deliberately absent from the credentials
 // card: the client's reference shows that line struck through, read as
-// marked for removal, not inclusion. The LinkedIn button renders but is
-// inert (no href) until a real URL is supplied — never an empty-string
-// href, which Link/Button's internal routing logic is not built to accept
-// safely.
+// marked for removal, not inclusion. The LinkedIn button falls back to
+// aria-disabled with no href when credentials.linkedinUrl is empty — never
+// an empty-string href, which Link/Button's internal routing logic is not
+// built to accept safely — so this still degrades safely if the URL is ever
+// cleared. Hover/focus uses LinkedIn's own brand blue (#0A66C2, the current
+// official mark colour) rather than the site's navy, at the client's
+// explicit request for "the linkedin colored animation" — the one
+// deliberate departure from this component's otherwise site-standard hover
+// palette, same color-transition mechanism as every other hover state on
+// the site (see ui/button.js's secondary variant), not a new animation
+// pattern. White hover text confirmed at 5.69:1 against that blue, above
+// the site's 4.5:1 floor, so unlike Button's teal-hover exception this
+// needed no contrast workaround. Written as hover:text-primary-foreground
+// (resolves to #ffffff here — this section is tone="surface", not
+// tone="deep", so the .theme-deep override of that token never applies),
+// not hover:text-white: globals.css's @theme strips every default Tailwind
+// colour (`--color-*: initial;`) so only this site's own tokens exist —
+// text-white silently compiles to nothing (confirmed by grepping the built
+// CSS: every other hover:* class on this element was present except that
+// one), leaving the hover state on navy text over navy-adjacent blue
+// instead of white. LinkedInIcon's `fill="currentColor"` inherits this, so
+// one token colours both the label and the icon on hover/focus.
 function LinkedInIcon(props) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" {...props}>
@@ -105,7 +123,7 @@ export function LeadershipTeaser({ leadership }) {
                 target={credentials.linkedinUrl ? "_blank" : undefined}
                 rel={credentials.linkedinUrl ? "noopener noreferrer" : undefined}
                 aria-disabled={!credentials.linkedinUrl}
-                className="mt-6 flex items-center justify-center gap-2 rounded-sm border border-border-strong py-3 text-small font-medium text-foreground transition-colors duration-(--duration-base) ease-out-quart aria-disabled:pointer-events-none aria-disabled:opacity-50 hover:border-primary hover:bg-primary hover:text-primary-foreground"
+                className="mt-6 flex items-center justify-center gap-2 rounded-sm border border-border-strong py-3 text-small font-medium text-foreground transition-colors duration-(--duration-base) ease-out-quart aria-disabled:pointer-events-none aria-disabled:opacity-50 hover:border-[#0A66C2] hover:bg-[#0A66C2] hover:text-primary-foreground focus-visible:border-[#0A66C2] focus-visible:bg-[#0A66C2] focus-visible:text-primary-foreground"
               >
                 <LinkedInIcon className="size-4" />
                 Connect on LinkedIn

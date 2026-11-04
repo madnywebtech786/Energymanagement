@@ -3,6 +3,8 @@
 // 02-guides/data-security.md): every field is re-checked here regardless of
 // the client form's own HTML validation, since this endpoint is reachable by
 // any POST, not only through the page.
+import { sendContactNotification } from "@/lib/mail";
+
 const LIMITS = {
   name: 100,
   company: 100,
@@ -64,17 +66,17 @@ export async function POST(request) {
     return Response.json({ ok: false, errors }, { status: 400 });
   }
 
-  // Delivery is not wired up yet (Nodemailer/SMTP, planned). Log the
-  // validated submission server-side so nothing is silently dropped while
-  // that decision is pending; swap this for src/lib/mail.js once the
-  // credentials exist.
-  console.info("[contact] submission received", {
-    name: fields.name,
-    company: fields.company,
-    email: fields.email,
-    phone: fields.phone,
-    messageLength: fields.message.length,
-  });
+  try {
+    await sendContactNotification(fields);
+  } catch (error) {
+    // A send failure (bad credentials, Gmail rate limit, network issue) must
+    // surface as an error response — returning ok:true here would show the
+    // visitor "Message sent" while the email never arrived, which is worse
+    // than the previous log-only stub. Logged server-side with detail for
+    // diagnosis; the client only ever sees the generic copy.error message.
+    console.error("[contact] failed to send notification email", error);
+    return Response.json({ ok: false, errors: { form: "Delivery failed." } }, { status: 502 });
+  }
 
   return Response.json({ ok: true });
 }

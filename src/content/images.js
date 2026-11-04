@@ -152,6 +152,10 @@ export const images = {
       },
     },
   },
+  // No longer used live (WhyUsPanel switched to the field-development
+  // illustration, see src/components/sections/why-us/why-us-panel.js) — kept
+  // here only as a /design photo-grade specimen, the same precedent
+  // images.hero.* already set when the hero itself stopped using photos.
   whyUs: {
     src: whyUsOperator,
     alt: "Person in a white hard hat walking between large storage tanks and pipework",
