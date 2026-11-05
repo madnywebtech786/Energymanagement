@@ -34,15 +34,32 @@
 // crop to fill its frame, or "contain" for a diagram whose full content
 // must stay visible uncropped — matching how WhyUsPanel already shows
 // 12_field_development.webp at its own real aspect ratio, not cropped.
+//
+// `categories` is a small, deliberately starter set, not a finished
+// taxonomy — the client's own direction: build the structure and working
+// filter/search functionality now, decide the real category set once real
+// posts are being written. Each entry is `{ id, label }`; `id` is the
+// stable value a post's own `category` field and the filter UI's URL
+// param both reference, `label` is the display text, kept separate so a
+// category's wording can be edited later without changing every post that
+// already references its `id`. Adding a new category later is just adding
+// an entry here, then setting that `id` on whichever posts belong to it —
+// no other file needs to change (the filter UI reads this array directly,
+// see thought-leadership-feed.js).
 export const thoughtLeadership = {
   eyebrow: "Thought Leadership",
   heading: "Field notes from thirty-five years in E&P.",
   lead: "Observations on reservoirs, wells and the decisions that move them — written as they come up.",
+  categories: [
+    { id: "reservoir", label: "Reservoir" },
+    { id: "field-development", label: "Field Development" },
+  ],
   posts: [
     {
       slug: "reservoir-decline-curves",
       date: "2026-03-02",
       readingMinutes: 4,
+      category: "reservoir",
       opening:
         "Most reservoir reviews treat decline curves as a forecasting exercise rather than a diagnostic one.",
       body: [
@@ -56,6 +73,7 @@ export const thoughtLeadership = {
       slug: "field-development-phasing",
       date: "2026-01-28",
       readingMinutes: 3,
+      category: "field-development",
       opening:
         "Field development plans that skip a real phasing discussion look optimal on paper and strained by year three.",
       body: [

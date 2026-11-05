@@ -1,13 +1,14 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
+import { AnimatePresence } from "motion/react";
 import * as m from "motion/react-m";
-import { Share2 } from "lucide-react";
+import { Share2, Check } from "lucide-react";
 import { Text } from "@/components/ui/text";
-import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/animations/reveal";
 import { leadership } from "@/content/leadership";
+import { cx } from "@/lib/cx";
 import { DURATION, EASE } from "@/lib/motion";
 
 // Deterministic, locale-fixed formatting — never relies on the request's
@@ -38,10 +39,19 @@ function formatPostDate(date, month = "long") {
 // browser supports the native share sheet. There is no per-post route to
 // link to (see the design spec's "no detail route" decision), so the hash
 // fragment is the only honest unit smaller than the whole feed to share.
+//
+// The button communicates "copied" by swapping its own icon/label in
+// place (Share2 "Share" -> Check "Link copied") rather than a separate
+// floating toast above it — a toast needs a sighted user to look in two
+// places at once (the button they just pressed, then up at a tooltip);
+// an in-place swap keeps the confirmation exactly where attention
+// already is. A sr-only sibling span still carries role="status"/
+// aria-live so screen readers hear the state change too (see the
+// button's own comment for why the live region isn't on the button
+// itself).
 export function FeedEntry({ post }) {
   const [expanded, setExpanded] = useState(false);
   const [shareState, setShareState] = useState("idle"); // "idle" | "copied"
-  const toastId = useId();
   const hasMore = post.body.length > 1;
   const hasImage = Boolean(post.image?.src);
 
@@ -63,7 +73,17 @@ export function FeedEntry({ post }) {
   }
 
   return (
-    <li id={post.slug} className="border-t border-border py-12 first:border-t-0 sm:py-14">
+    <li
+      id={post.slug}
+      // data-slug/data-category are read by ThoughtLeadershipFeed's own
+      // DOM-visibility effect (see thought-leadership-feed.js) to decide
+      // which already-rendered posts stay visible under the current
+      // search/category filter — this element's own React rendering is
+      // otherwise completely unaware of filtering.
+      data-slug={post.slug}
+      data-category={post.category}
+      className="rounded-xl border border-border bg-surface p-6 shadow-[0_1px_2px_rgb(11_37_69/0.04),0_8px_24px_-12px_rgb(11_37_69/0.12)] sm:p-8"
+    >
       <Reveal>
         <div className="flex items-center gap-3">
           <div className="relative size-11 shrink-0 overflow-hidden rounded-full bg-border">
@@ -116,7 +136,15 @@ export function FeedEntry({ post }) {
         // already set for this exact file: intrinsic width/height, no
         // fill/object-cover, shown at its own real aspect ratio.
         <Reveal delay={0.1} className="mt-5">
-          <div className="overflow-hidden rounded-sm bg-border">
+          {/* max-h is a breakage guard, not a visual downsize: w-full/h-auto
+              keeps the image at its real width (the card's own full
+              content width, unchanged), but an unusually tall intrinsic
+              aspect ratio (a portrait diagram, say) could otherwise make
+              the rendered image far taller than the card around it —
+              max-h caps that without touching width or normal-aspect
+              images at all; overflow-hidden on the wrapper clips cleanly
+              rather than letting a capped-height image distort. */}
+          <div className="max-h-[32rem] overflow-hidden rounded-xl bg-border">
             <Image
               src={post.image.src}
               alt={post.image.alt}
@@ -135,7 +163,12 @@ export function FeedEntry({ post }) {
       ) : (
         hasImage && (
           <Reveal delay={0.1} className="mt-5">
-            <div className="relative aspect-video overflow-hidden rounded-sm bg-border">
+            {/* aspect-video already is this branch's own overflow guard —
+                a fixed ratio box that fill/object-cover always exactly
+                fits inside, regardless of the source image's real
+                dimensions — so no separate max-h is needed here the way
+                the width/height "contain" branch above needs one. */}
+            <div className="relative aspect-video overflow-hidden rounded-xl bg-border">
               <Image
                 src={post.image.src}
                 alt={post.image.alt}
@@ -190,21 +223,62 @@ export function FeedEntry({ post }) {
           <span />
         )}
 
-        <div className="relative">
-          <Button variant="secondary" size="md" icon={Share2} onClick={handleShare}>
-            Share
-          </Button>
-          <span
-            id={toastId}
-            role="status"
-            aria-live="polite"
-            className={`pointer-events-none absolute bottom-full right-0 mb-2 whitespace-nowrap rounded-sm bg-deep px-3 py-1.5 text-small text-deep-foreground transition-opacity duration-(--duration-base) ${
-              shareState === "copied" ? "opacity-100" : "opacity-0"
-            }`}
-          >
-            Link copied
+        {/* A compact pill, not the sitewide Button component: Button's
+            divided label+icon-cell look is this site's CTA pattern
+            ("Discuss your asset", "View all services"...) — too heavy a
+            treatment for a lightweight per-post action sitting beside a
+            plain text link on the same row. overflow-hidden plus a fixed
+            min-w keeps the pill's own width stable while its inner
+            content cross-fades between states, so the button doesn't
+            visibly resize or make the "See more" link beside it jump.
+            The live region announcing the state change is a separate
+            sr-only span, not role="status" on the button itself — a live
+            region on the interactive element whose own accessible name
+            just changed on click/focus reads inconsistently across screen
+            readers; a plain-text sibling announces the result once
+            without fighting the button's native semantics or the
+            animated child's own transient DOM presence. */}
+        <button
+          type="button"
+          onClick={handleShare}
+          className={cx(
+            "flex min-w-[8.5rem] items-center justify-center gap-2 overflow-hidden rounded-sm border px-4 py-2.5 text-small font-semibold transition-colors duration-(--duration-fast)",
+            shareState === "copied"
+              ? "border-accent/40 bg-accent/10 text-accent"
+              : "border-border-strong text-foreground hover:border-primary hover:bg-primary hover:text-primary-foreground",
+          )}
+        >
+          <AnimatePresence mode="wait" initial={false}>
+            {shareState === "copied" ? (
+              <m.span
+                key="copied"
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: DURATION.fast, ease: EASE.outSoft }}
+                className="flex items-center gap-2"
+              >
+                <Check aria-hidden="true" strokeWidth={2} className="size-4" />
+                Link copied
+              </m.span>
+            ) : (
+              <m.span
+                key="share"
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: DURATION.fast, ease: EASE.outSoft }}
+                className="flex items-center gap-2"
+              >
+                <Share2 aria-hidden="true" strokeWidth={1.5} className="size-4" />
+                Share
+              </m.span>
+            )}
+          </AnimatePresence>
+          <span role="status" aria-live="polite" className="sr-only">
+            {shareState === "copied" ? "Link copied" : ""}
           </span>
-        </div>
+        </button>
       </div>
     </li>
   );
