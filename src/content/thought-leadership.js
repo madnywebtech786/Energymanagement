@@ -3,17 +3,22 @@
 // behalf the way DRAFT copy elsewhere in src/content is, since the whole
 // point of this page is to host his own writing.
 //
-// `date` is a plain ISO string (YYYY-MM-DD), formatted for display by
-// formatPostDate() in feed-entry.js — never new Date() at render time
-// beyond parsing this fixed string, and never Date.now()-relative text
-// like "2 weeks ago": this route prerenders under Cache Components, which
-// forbids non-deterministic values (new Date(), Math.random()) during
-// that render.
-//
-// `readingMinutes` is a plain authored integer, not computed from
-// body.length at render time, for the same reason — pick it once when the
-// post is added (roughly: total words / 200, rounded to the nearest
-// minute, minimum 1) rather than deriving it on every request.
+// `date` is a plain ISO string (YYYY-MM-DD). Neither it nor
+// `readingMinutes` is rendered on the card any more (removed at the
+// client's request — the date/reading-time row was starving the name and
+// credential column of width at narrow screens, causing severe text
+// wrapping, and the client wanted both gone regardless, not just the
+// layout bug fixed). Both fields are kept in the data rather than
+// deleted, since they're still meaningful authored metadata (when a post
+// was written, a rough read-time estimate) that a future design could
+// surface again without re-deriving it — `date` in particular must stay
+// a fixed string if it's ever read again: this route prerenders under
+// Cache Components, which forbids non-deterministic values (new Date(),
+// Math.random()) during render, so no code should ever compute today's
+// date or a relative "2 weeks ago" string from it at request time.
+// `readingMinutes` is a plain authored integer for the same determinism
+// reason, not computed from body/section length at render time — pick it
+// once when the post is added.
 //
 // `body` is an array of paragraph strings, matching leadership.bio's own
 // shape. body[0] is always visible on the page (it's the post's lead

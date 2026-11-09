@@ -11,19 +11,6 @@ import { leadership } from "@/content/leadership";
 import { cx } from "@/lib/cx";
 import { DURATION, EASE } from "@/lib/motion";
 
-// Deterministic, locale-fixed formatting — never relies on the request's
-// own timezone/locale or on Date.now(), both of which would make this
-// prerendered route non-deterministic under Cache Components. "date" is
-// always the fixed "YYYY-MM-DD" string from thought-leadership.js.
-function formatPostDate(date, month = "long") {
-  const [year, monthNum, day] = date.split("-").map(Number);
-  // New Date(year, monthIndex, day) with explicit numeric parts, not
-  // new Date(dateString), parses as local time with no UTC/timezone
-  // ambiguity — the moment itself is never read, only used to format.
-  const parsed = new Date(year, monthNum - 1, day);
-  return parsed.toLocaleDateString("en-CA", { year: "numeric", month, day: "numeric" });
-}
-
 // One post. body[0] (the lead paragraph) is always visible, directly under
 // the image — matching how a LinkedIn post always shows some real text
 // before any "see more" boundary, never just a bare opening line with
@@ -94,33 +81,27 @@ export function FeedEntry({ post }) {
             <Image src="/leader.jpeg" alt={leadership.name} fill sizes="44px" className="object-cover" />
           </div>
           <div className="min-w-0 flex-1">
-            <Text variant="small" className="font-semibold text-foreground">
+            {/* Text's own variant="small" base class (text-small, 0.875rem)
+                and this size override are the same specificity — Tailwind's
+                generated CSS order, not the className string's own order,
+                decides which wins on a same-specificity collision like this
+                (confirmed elsewhere in this codebase: the search box's own
+                !rounded-[...] override exists for the exact same reason),
+                so the ! modifier is needed here too, not optional polish. */}
+            <Text variant="small" className="!text-[1rem] font-semibold text-foreground sm:!text-[1.125rem]">
               {leadership.name}
             </Text>
             {/* A smaller size than the name (text-[0.7rem] vs. the default
                 text-small/14px), not Text's own "label" variant — that
                 variant's uppercase/letter-spaced/semibold styling is built
                 for a section eyebrow, not a plain small caption under a
-                name. Shown at every width now (an earlier version hid this
-                below sm: on a mistaken assumption that it competed with
-                the date for horizontal room on the same row — it doesn't:
-                credential sits on its own line under the name, so the
-                date column's width budget was never actually affected by
-                it; items-center on the row simply grows to match this
-                column's new two-line height). */}
-            <Text variant="small" muted className="text-[0.7rem]">
+                name. A modest size bump from sm: up only, per the client's
+                explicit "a bit, on large screens" — unprefixed stays at the
+                original 0.7rem. */}
+            <Text variant="small" muted className="text-[0.7rem] sm:!text-[0.8125rem]">
               {leadership.credential}
             </Text>
           </div>
-          <Text variant="small" muted className="shrink-0 whitespace-nowrap text-right tabular-nums">
-            {/* Short month on mobile ("Mar 2, 2026") so the date and read
-                time comfortably share the row with the avatar and name at
-                narrow widths; full month name from sm: up, where there is
-                room for it. */}
-            <span className="sm:hidden">{formatPostDate(post.date, "short")}</span>
-            <span className="hidden sm:inline">{formatPostDate(post.date)}</span>
-            {" "}· {post.readingMinutes} min read
-          </Text>
         </div>
       </Reveal>
 
