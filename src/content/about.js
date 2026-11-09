@@ -14,10 +14,6 @@ export const about = {
         a: "Senior practitioners do the work themselves, not just supervise it. Our consulting is led by an executive with more than 35 years of national and international E&P experience, including production engineering and chief-executive roles.",
       },
       {
-        q: "Does Energy & Management hold an APEGA Permit to Practice?",
-        a: "No. We provide management, technical advisory and project coordination services. Where engineering or geoscience work must be authenticated in Alberta or another jurisdiction, it is performed and sealed by appropriately licensed professionals or permit holders engaged for that scope.",
-      },
-      {
         q: "How are engagement teams structured?",
         a: "We assemble licensed specialists for each engagement, so you receive stamped, authenticated work products where regulations require them, without carrying permanent overhead. Teams are scaled lean to your scope, focused on reducing OPEX and CAPEX.",
       },

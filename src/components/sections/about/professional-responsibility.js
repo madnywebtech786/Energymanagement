@@ -20,7 +20,7 @@ import { TextReveal } from "@/components/animations/text-reveal";
 // stronger trust signal than hiding the distinction in small print. The
 // connecting rule uses the same scroll-drawn-line technique LeadershipTeaser
 // already uses under the founder's name, not a new graphic.
-export function ProfessionalResponsibility({ responsibility, apega }) {
+export function ProfessionalResponsibility({ responsibility }) {
   const ref = useRef(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start 85%", "start 45%"] });
 
@@ -64,13 +64,6 @@ export function ProfessionalResponsibility({ responsibility, apega }) {
                 {responsibility.text}
               </Text>
             </Reveal>
-            {apega && (
-              <Reveal delay={0.22}>
-                <Text variant="small" muted className="mt-6 border-t border-border pt-5">
-                  {apega}
-                </Text>
-              </Reveal>
-            )}
           </div>
         </div>
       </Container>

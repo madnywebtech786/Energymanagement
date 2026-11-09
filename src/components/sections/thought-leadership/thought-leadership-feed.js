@@ -8,6 +8,15 @@ import { MobileFilterSheet } from "./mobile-filter-sheet";
 
 const SEARCH_DEBOUNCE_MS = 300;
 
+// A post has either body (plain paragraphs) or sections (named
+// heading+text findings, see thought-leadership.js) — never both — so
+// the searchable prose has to be assembled differently for each shape
+// rather than assuming every post has a body array.
+function postProseText(post) {
+  if (post.sections) return post.sections.map((section) => `${section.heading} ${section.text}`).join(" ");
+  return post.body.join(" ");
+}
+
 // Builds the "which post text does the search box match against" string
 // once per post (opening + every body paragraph), not on every keystroke —
 // posts are static content, so this never changes after mount and is safe
@@ -15,7 +24,7 @@ const SEARCH_DEBOUNCE_MS = 300;
 // render.
 function buildSearchIndex(posts) {
   return new Map(
-    posts.map((post) => [post.slug, `${post.opening} ${post.body.join(" ")}`.toLowerCase()]),
+    posts.map((post) => [post.slug, `${post.opening} ${postProseText(post)}`.toLowerCase()]),
   );
 }
 

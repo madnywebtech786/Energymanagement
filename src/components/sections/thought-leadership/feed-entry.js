@@ -52,7 +52,11 @@ function formatPostDate(date, month = "long") {
 export function FeedEntry({ post }) {
   const [expanded, setExpanded] = useState(false);
   const [shareState, setShareState] = useState("idle"); // "idle" | "copied"
-  const hasMore = post.body.length > 1;
+  // A sections post (see thought-leadership.js) has no body array at all
+  // and is always shown in full — hasMore stays false so the "See more"
+  // toggle and the collapsible body.slice(1) block below neither render.
+  const hasSections = Boolean(post.sections);
+  const hasMore = !hasSections && post.body.length > 1;
   const hasImage = Boolean(post.image?.src);
 
   async function handleShare() {
@@ -186,27 +190,51 @@ export function FeedEntry({ post }) {
         )
       )}
 
-      <Reveal delay={0.14} className="mt-5">
-        <Text variant="reading" muted>
-          {post.body[0]}
-        </Text>
-      </Reveal>
-
-      {hasMore && (
-        <m.div
-          initial={false}
-          animate={{ height: expanded ? "auto" : 0, opacity: expanded ? 1 : 0 }}
-          transition={{ duration: DURATION.base, ease: EASE.outSoft }}
-          className="overflow-hidden"
-        >
-          <div className="pt-4">
-            {post.body.slice(1).map((paragraph) => (
-              <Text key={paragraph} variant="reading" muted className="mb-4 last:mb-0">
-                {paragraph}
+      {hasSections ? (
+        // Every section shown in full, each its own heading (sans-serif,
+        // bold, full-strength foreground — distinct from the serif muted
+        // prose below it, the same sans/serif split this site already
+        // uses elsewhere for structural text vs. reading text) plus its
+        // paragraph. No collapse: these are co-equal named findings, not
+        // a lead idea with supporting elaboration, so there is no single
+        // "first paragraph" to privilege the way body[0] is below.
+        <div className="mt-5 flex flex-col gap-5">
+          {post.sections.map((section, index) => (
+            <Reveal key={section.heading} delay={0.14 + index * 0.04}>
+              <Text variant="body" className="font-semibold text-foreground">
+                {section.heading}
               </Text>
-            ))}
-          </div>
-        </m.div>
+              <Text variant="reading" muted className="mt-1.5">
+                {section.text}
+              </Text>
+            </Reveal>
+          ))}
+        </div>
+      ) : (
+        <>
+          <Reveal delay={0.14} className="mt-5">
+            <Text variant="reading" muted>
+              {post.body[0]}
+            </Text>
+          </Reveal>
+
+          {hasMore && (
+            <m.div
+              initial={false}
+              animate={{ height: expanded ? "auto" : 0, opacity: expanded ? 1 : 0 }}
+              transition={{ duration: DURATION.base, ease: EASE.outSoft }}
+              className="overflow-hidden"
+            >
+              <div className="pt-4">
+                {post.body.slice(1).map((paragraph) => (
+                  <Text key={paragraph} variant="reading" muted className="mb-4 last:mb-0">
+                    {paragraph}
+                  </Text>
+                ))}
+              </div>
+            </m.div>
+          )}
+        </>
       )}
 
       <div className="mt-6 flex items-center justify-between gap-4">

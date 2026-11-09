@@ -31,7 +31,7 @@ export default function AboutPage() {
       <LeadershipTeaser leadership={leadership} />
       <WhyUsPanel whyUs={whyUs} />
       <GuaranteeSection guarantee={guarantee} />
-      <ProfessionalResponsibility responsibility={legal.responsibility} apega={legal.responsibility.apega} />
+      <ProfessionalResponsibility responsibility={legal.responsibility} />
       <AboutFaq faq={about.faq} />
       <ClosingCta
         eyebrow={about.cta.eyebrow}
